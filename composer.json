@@ -1,0 +1,20 @@
+{
+    "name": "roolith/generator",
+    "description": "Generate php file using php",
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "require": {},
+    "type": "library",
+    "authors": [
+        {
+            "name": "Hadi",
+            "email": "hadicse@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.2"
+    },
+    "autoload": {
+        "psr-4": {"Roolith\\": "src/"}
+    }
+}
