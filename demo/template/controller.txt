@@ -1,0 +1,13 @@
+<?php
+namespace Something;
+
+class {{name}}Controller extends Controller
+{
+    public function index()
+    {
+    }
+
+    public function create()
+    {
+    }
+}
