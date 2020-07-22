@@ -1,5 +1,4 @@
 <?php
-
 use Roolith\Command;
 use Roolith\Console;
 use Roolith\FileGenerator;
@@ -13,4 +12,7 @@ $fileParser = new FileParser();
 $command = new Command();
 $fileGenerator = new FileGenerator();
 $generator = new Generator($console, $fileParser, $command, $fileGenerator);
-$generator->setTemplateDirectory(__DIR__.'/template')->watch();
+$generator
+    ->setTemplateDirectory(__DIR__.'/template')
+    ->setProjectBaseDirectory(__DIR__)
+    ->watch();

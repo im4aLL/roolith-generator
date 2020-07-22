@@ -1,6 +1,8 @@
 <?php
 namespace Roolith;
 
+use Roolith\Constants\ColorConstants;
+
 class Generator
 {
     private $console;
@@ -36,10 +38,28 @@ class Generator
         return $this;
     }
 
+    public function setProjectBaseDirectory($directory)
+    {
+        $this->fileGenerator->setProjectBaseDir($directory);
+
+        return $this;
+    }
+
     protected function generateFile($type, $value)
     {
         if ($this->fileParser->templateExists($type)) {
-            $this->fileParser->parseTemplate($type, $value);
+            $parsedTemplateData = $this->fileParser->parseTemplate($type, $value);
+
+            $saved = $this->fileGenerator->save($parsedTemplateData['lines'], $parsedTemplateData['instructions'], $this->console);
+
+            if ($saved['created']) {
+                $this->console->output($saved['filename'].' has been created!', ColorConstants::GREEN);
+                $this->console->outputLine('Location: '.$saved['completeFilePath']);
+            } else {
+                $this->console->output('Unable to create file!', ColorConstants::RED);
+            }
         }
+
+        return $this;
     }
 }

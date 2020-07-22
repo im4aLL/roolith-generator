@@ -1,15 +1,32 @@
 <?php
 namespace Roolith;
 
+use Roolith\Constants\FileConstants;
+use stdClass;
+
 class FileParser
 {
     private $config;
     private $directory;
+    private $instructions;
 
-    public function __construct($config = ['extension' => 'txt'])
+    public function __construct($config = ['extension' => 'txt', 'instructionPrefix' => '#'], $instructions = [])
     {
         $this->config = $config;
         $this->directory = null;
+        $this->instructions = $instructions;
+
+        $this->addDefaultInstructions();
+    }
+
+    public function addDefaultInstructions()
+    {
+        $this->instructions[] = ['name' => FileConstants::OUTPUT_BASE_DIR, 'match' => '# outputBaseDir:'];
+    }
+
+    public function setFileExtension($extension)
+    {
+        $this->config['extension'] = $extension;
     }
 
     public function setDirectory($directory)
@@ -37,17 +54,65 @@ class FileParser
     public function parseTemplate($type, $value)
     {
         $filename = $this->getFilePathByName($type);
-        $fp = fopen($filename, "r");
+        $fp = fopen($filename, 'r');
 
         $content = fread($fp, filesize($filename));
         $lines = explode("\n", $content);
         fclose($fp);
 
-        return $this->bindValue($lines, $value);
+        return $this->bindValue($lines, $value, $type);
     }
 
-    private function bindValue($lines, $value)
+    private function bindValue($lines, $value, $type)
     {
-        
+        $result = [];
+        $instructions = [
+            FileConstants::FILE_NAME => $this->titleCase($value).$this->titleCase($type),
+        ];
+
+        foreach ($lines as $line) {
+            if (substr($line, 0, 1) === $this->config['instructionPrefix']) {
+                $instruction = $this->extractInstructionFromLine($line);
+
+                if (count($instruction) > 0) {
+                    $instructions[$instruction['name']] = $instruction['value'];
+                }
+            } else {
+                $result[] = $this->applyValueToLine($line, $value);
+            }
+        }
+
+        return [
+            'instructions' => $instructions,
+            'lines' => $result,
+        ];
+    }
+
+    private function titleCase($string)
+    {
+        return ucfirst($string);
+    }
+
+    private function applyValueToLine($line, $value)
+    {
+        $titleCaseValue = $this->titleCase($value);
+
+        return preg_replace('/{{name}}/', $titleCaseValue, $line);
+    }
+
+    private function extractInstructionFromLine($line)
+    {
+        foreach ($this->instructions as $instruction) {
+            preg_match('/^'.$instruction['match'].'/', $line, $matches);
+
+            if (count($matches) > 0) {
+                return [
+                    'name' => $instruction['name'],
+                    'value' => trim(str_replace($instruction['match'], '', $line)),
+                ];
+            }
+        }
+
+        return [];
     }
 }

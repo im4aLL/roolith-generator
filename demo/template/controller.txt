@@ -1,3 +1,4 @@
+# outputBaseDir: Hadi/Controllers
 <?php
 namespace Something;
 
