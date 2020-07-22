@@ -1,18 +1,10 @@
 <?php
-use Roolith\Command;
-use Roolith\Console;
-use Roolith\FileGenerator;
-use Roolith\FileParser;
-use Roolith\Generator;
+use Roolith\GeneratorFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$console = new Console($argv);
-$fileParser = new FileParser();
-$command = new Command();
-$fileGenerator = new FileGenerator();
-$generator = new Generator($console, $fileParser, $command, $fileGenerator);
+$generator = GeneratorFactory::getInstance();
 $generator
     ->setTemplateDirectory(__DIR__.'/template')
     ->setProjectBaseDirectory(__DIR__)
-    ->watch();
+    ->watch($argv);

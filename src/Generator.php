@@ -18,8 +18,10 @@ class Generator
         $this->fileGenerator = $fileGenerator;
     }
 
-    public function watch()
+    public function watch($arguments)
     {
+        $this->console->setArguments($arguments);
+
         if ($this->console->hasArgument()) {
             $this->command->bootstrap($this->console->getArguments());
 
@@ -50,6 +52,7 @@ class Generator
         if ($this->fileParser->templateExists($type)) {
             $parsedTemplateData = $this->fileParser->parseTemplate($type, $value);
 
+            $this->console->outputNewLine();
             $saved = $this->fileGenerator->save($parsedTemplateData['lines'], $parsedTemplateData['instructions'], $this->console);
 
             if ($saved['created']) {
@@ -58,6 +61,7 @@ class Generator
             } else {
                 $this->console->output('Unable to create file!', ColorConstants::RED);
             }
+            $this->console->outputNewLine();
         }
 
         return $this;

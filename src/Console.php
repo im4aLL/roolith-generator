@@ -7,10 +7,15 @@ class Console
     private $arguments;
     private $consoleColor;
 
-    public function __construct($arguments, ConsoleColor $consoleColor = null)
+    public function __construct(ConsoleColor $consoleColor = null)
+    {
+        $this->arguments = null;
+        $this->consoleColor = $consoleColor ? $consoleColor : new ConsoleColor();
+    }
+
+    public function setArguments($arguments)
     {
         $this->arguments = $arguments;
-        $this->consoleColor = $consoleColor ? $consoleColor : new ConsoleColor();
     }
 
     public function getArguments()
@@ -42,7 +47,12 @@ class Console
 
     public function outputLine($message, $color = null)
     {
-        echo PHP_EOL;
+        $this->outputNewLine();
         $this->output($message, $color);
+    }
+
+    public function outputNewLine()
+    {
+        echo PHP_EOL;
     }
 }
