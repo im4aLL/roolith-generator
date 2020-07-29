@@ -1,14 +1,19 @@
 <?php
 namespace Roolith;
 
+use Roolith\Commands\GenerateCommand;
 use Roolith\Constants\ColorConstants;
 
 class Generator
 {
-    private $console;
-    private $fileParser;
-    private $command;
-    private $fileGenerator;
+    protected $console;
+    protected $fileParser;
+    protected $command;
+    protected $fileGenerator;
+
+    public $defaultCommandClass = [
+        GenerateCommand::class
+    ];
 
     public function __construct(Console $console, FileParser $fileParser, Command $command, FileGenerator $fileGenerator)
     {
@@ -16,20 +21,9 @@ class Generator
         $this->fileParser = $fileParser;
         $this->command = $command;
         $this->fileGenerator = $fileGenerator;
-    }
 
-    public function watch($arguments)
-    {
-        $this->console->setArguments($arguments);
-
-        if ($this->console->hasArgument()) {
-            $this->command->bootstrap($this->console->getArguments());
-
-            switch ($this->command->name()) {
-                case 'generate':
-                    $this->generateFile($this->command->type(), $this->command->value());
-                    break;
-            }
+        if (is_array($this->defaultCommandClass) && count($this->defaultCommandClass) > 0) {
+            $this->registerCommandClass($this->defaultCommandClass);
         }
     }
 
@@ -47,21 +41,32 @@ class Generator
         return $this;
     }
 
-    protected function generateFile($type, $value)
+    public function watch($arguments)
     {
-        if ($this->fileParser->templateExists($type)) {
-            $parsedTemplateData = $this->fileParser->parseTemplate($type, $value);
+        $this->console->setArguments($arguments);
 
-            $this->console->outputNewLine();
-            $saved = $this->fileGenerator->save($parsedTemplateData['lines'], $parsedTemplateData['instructions'], $this->console);
+        if ($this->console->hasArgument()) {
+            $this->command->bootstrap($this->console->getArguments());
 
-            if ($saved['created']) {
-                $this->console->output($saved['filename'].' has been created!', ColorConstants::GREEN);
-                $this->console->outputLine('Location: '.$saved['completeFilePath']);
+            $command = $this->command->getRegisteredCommandByName($this->command->name());
+            if ($command) {
+                $command['instance']->handle($this->command, $this->console, $this->fileParser, $this->fileGenerator);
             } else {
-                $this->console->output('Unable to create file!', ColorConstants::RED);
+                $this->console->output("Command doesn't exists!", ColorConstants::RED);
             }
-            $this->console->outputNewLine();
+        }
+
+        return $this;
+    }
+
+    public function registerCommandClass($commandClassArray)
+    {
+        foreach ($commandClassArray as $commandClass) {
+            $classInstance = new $commandClass();
+            $registrationArray = $classInstance->register();
+            $registrationArray['instance'] = $classInstance;
+
+            $this->command->register($registrationArray);
         }
 
         return $this;
