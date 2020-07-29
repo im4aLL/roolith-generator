@@ -97,7 +97,17 @@ class FileParser
     {
         $titleCaseValue = $this->titleCase($value);
 
-        return preg_replace('/{{name}}/', $titleCaseValue, $line);
+        $patternArray = [
+            '/{{name}}/',
+            '/{name}/',
+        ];
+
+        $replacementArray = [
+            $titleCaseValue,
+            $value,
+        ];
+
+        return preg_replace($patternArray, $replacementArray, $line);
     }
 
     private function extractInstructionFromLine($line)

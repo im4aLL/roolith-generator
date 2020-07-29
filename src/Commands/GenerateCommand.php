@@ -19,6 +19,7 @@ class GenerateCommand implements CommandInterface
             ],
             'typeAlias' => [
                 'controller' => ['c'],
+                'command' => ['cmd'],
             ],
         ];
     }
