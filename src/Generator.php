@@ -2,7 +2,6 @@
 namespace Roolith;
 
 use Roolith\Commands\GenerateCommand;
-use Roolith\Constants\ColorConstants;
 
 class Generator
 {
@@ -52,7 +51,7 @@ class Generator
             if ($command) {
                 $command['instance']->handle($this->command, $this->console, $this->fileParser, $this->fileGenerator);
             } else {
-                $this->console->output("Command doesn't exists!", ColorConstants::RED);
+                $this->console->output("Command doesn't exists!");
             }
         }
 

@@ -3,7 +3,6 @@ namespace Roolith\Commands;
 
 use Roolith\Command;
 use Roolith\Console;
-use Roolith\Constants\ColorConstants;
 use Roolith\FileGenerator;
 use Roolith\FileParser;
 use Roolith\Interfaces\CommandInterface;
@@ -33,10 +32,10 @@ class GenerateCommand implements CommandInterface
             $saved = $fileGenerator->save($parsedTemplateData['lines'], $parsedTemplateData['instructions'], $console);
 
             if ($saved['created']) {
-                $console->output($saved['filename'].' has been created!', ColorConstants::GREEN);
+                $console->output($saved['filename'].' has been created!');
                 $console->outputLine('Location: '.$saved['completeFilePath']);
             } else {
-                $console->output('Unable to create file!', ColorConstants::RED);
+                $console->output('Unable to create file!');
             }
 
             $console->outputNewLine();

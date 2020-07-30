@@ -7,10 +7,9 @@ class Console
     private $arguments;
     private $consoleColor;
 
-    public function __construct(ConsoleColor $consoleColor = null)
+    public function __construct()
     {
         $this->arguments = null;
-        $this->consoleColor = $consoleColor ? $consoleColor : new ConsoleColor();
     }
 
     public function setArguments($arguments)
@@ -36,19 +35,14 @@ class Console
         return count($this->getArguments()) > 0;
     }
 
-    public function output($message, $color = null)
+    public function output($message)
     {
-        if ($color) {
-            echo $this->consoleColor->getColoredString($message, $color);
-        } else {
-            echo $message;
-        }
+        echo $message;
     }
 
-    public function outputLine($message, $color = null)
+    public function outputLine($message)
     {
         $this->outputNewLine();
-        $this->output($message, $color);
     }
 
     public function outputNewLine()

@@ -2,7 +2,6 @@
 namespace Roolith;
 
 use Roolith\Constants\FileConstants;
-use stdClass;
 
 class FileParser
 {

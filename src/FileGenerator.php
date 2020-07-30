@@ -1,7 +1,6 @@
 <?php
 namespace Roolith;
 
-use Roolith\Constants\ColorConstants;
 use Roolith\Constants\FileConstants;
 
 class FileGenerator
@@ -37,7 +36,7 @@ class FileGenerator
         $completeFilePath = $outputDir.'/'.$fileName;
 
         if (file_exists($completeFilePath)) {
-            $console->output('The file '.$fileName.' already exists. Do you want to overwrite it? (yes/no) ', ColorConstants::YELLOW);
+            $console->output('The file '.$fileName.' already exists. Do you want to overwrite it? (yes/no) ');
             $confirmed = $this->getOverwriteConfirmation();
 
             if ($confirmed) {
