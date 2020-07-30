@@ -15,22 +15,12 @@ class FileParser
         $this->directory = null;
         $this->instructions = $instructions;
 
-        $this->addDefaultInstructions();
-    }
-
-    public function addDefaultInstructions()
-    {
-        $this->instructions[] = ['name' => FileConstants::OUTPUT_BASE_DIR, 'match' => '# outputBaseDir:'];
+        $this->addInstruction(['name' => FileConstants::OUTPUT_BASE_DIR, 'match' => '# outputBaseDir:']);
     }
 
     public function setFileExtension($extension)
     {
         $this->config['extension'] = $extension;
-    }
-
-    public function setDirectory($directory)
-    {
-        $this->directory = $directory;
 
         return $this;
     }
@@ -47,7 +37,7 @@ class FileParser
 
     private function getFilePathByName($name)
     {
-        return $this->directory.'/'.$name.'.'.$this->getExtension();
+        return $this->getDirectory().'/'.$name.'.'.$this->getExtension();
     }
 
     public function parseTemplate($type, $value)
@@ -123,5 +113,29 @@ class FileParser
         }
 
         return [];
+    }
+
+    public function getInstructions()
+    {
+        return $this->instructions;
+    }
+
+    public function addInstruction($instruction)
+    {
+        $this->instructions[] = $instruction;
+
+        return $this;
+    }
+
+    public function setDirectory($directory)
+    {
+        $this->directory = $directory;
+
+        return $this;
+    }
+
+    public function getDirectory()
+    {
+        return $this->directory;
     }
 }

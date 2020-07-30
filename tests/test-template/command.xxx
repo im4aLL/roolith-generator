@@ -1,0 +1,24 @@
+# outputBaseDir: Commands
+<?php
+use Roolith\Command;
+use Roolith\Console;
+use Roolith\FileGenerator;
+use Roolith\FileParser;
+use Roolith\Interfaces\CommandInterface;
+
+class {{name}}Command implements CommandInterface
+{
+    public function register()
+    {
+        return [
+            'name' => '{name}',
+            'alias' => [],
+            'typeAlias' => [],
+        ];
+    }
+
+    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator)
+    {
+        $console->output('{{name}} command registered!');
+    }
+}
