@@ -3,13 +3,23 @@ namespace Roolith;
 
 class GeneratorFactory
 {
+    private static $instance = null;
+
+    private function __construct()
+    {
+    }
+
     public static function getInstance()
     {
-        $console = new Console();
-        $fileParser = new FileParser();
-        $command = new Command();
-        $fileGenerator = new FileGenerator();
+        if (!self::$instance) {
+            $console = new Console();
+            $fileParser = new FileParser();
+            $command = new Command();
+            $fileGenerator = new FileGenerator();
 
-        return new Generator($console, $fileParser, $command, $fileGenerator);
+            self::$instance = new Generator($console, $fileParser, $command, $fileGenerator);
+        }
+
+        return self::$instance;
     }
 }
