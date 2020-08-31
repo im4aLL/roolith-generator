@@ -1,7 +1,7 @@
 <?php
-namespace Roolith;
+namespace Roolith\Generator;
 
-use Roolith\Constants\FileConstants;
+use Roolith\Generator\Constants\FileConstants;
 
 class FileGenerator
 {

@@ -1,9 +1,9 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Roolith\Console;
-use Roolith\FileGenerator;
-use Roolith\FileParser;
+use Roolith\Generator\Console;
+use Roolith\Generator\FileGenerator;
+use Roolith\Generator\FileParser;
 
 class FileGeneratorTest extends TestCase
 {

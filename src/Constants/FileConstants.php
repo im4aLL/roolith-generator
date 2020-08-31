@@ -1,5 +1,5 @@
 <?php
-namespace Roolith\Constants;
+namespace Roolith\Generator\Constants;
 
 class FileConstants
 {

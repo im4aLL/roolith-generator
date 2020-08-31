@@ -1,5 +1,5 @@
 <?php
-namespace Roolith;
+namespace Roolith\Generator;
 
 
 class Command

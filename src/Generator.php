@@ -1,7 +1,7 @@
 <?php
-namespace Roolith;
+namespace Roolith\Generator;
 
-use Roolith\Commands\GenerateCommand;
+use Roolith\Generator\Commands\GenerateCommand;
 
 class Generator
 {

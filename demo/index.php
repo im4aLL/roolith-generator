@@ -1,5 +1,5 @@
 <?php
-use Roolith\GeneratorFactory;
+use Roolith\Generator\GeneratorFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require __DIR__. '/Commands/TestCommand.php';

@@ -2,7 +2,7 @@
 require_once __DIR__. '/TestMockCommandClass.php';
 
 use PHPUnit\Framework\TestCase;
-use Roolith\Command;
+use Roolith\Generator\Command;
 
 class CommandTest extends TestCase
 {

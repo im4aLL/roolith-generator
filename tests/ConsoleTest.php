@@ -1,6 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
-use Roolith\Console;
+use Roolith\Generator\Console;
 
 class ConsoleTest extends TestCase
 {

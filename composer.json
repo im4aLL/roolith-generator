@@ -8,14 +8,14 @@
     "authors": [
         {
             "name": "Hadi",
-            "email": "hadicse@gmail.com"
+            "email": "me@habibhadi.com"
         }
     ],
     "require-dev": {
         "phpunit/phpunit": "^9.2"
     },
     "autoload": {
-        "psr-4": {"Roolith\\": "src/"}
+        "psr-4": {"Roolith\\Generator\\": "src/"}
     },
-    "version": "1.0.0"
+    "version": "1.0.1"
 }

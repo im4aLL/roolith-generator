@@ -1,6 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
-use Roolith\FileParser;
+use Roolith\Generator\FileParser;
 
 class FileParserTest extends TestCase
 {

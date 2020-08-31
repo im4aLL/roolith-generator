@@ -5,7 +5,7 @@ class GenerateFactoryTest extends TestCase
 {
     public function testShouldHaveGetInstanceMethod()
     {
-        $reflectionClass = new ReflectionClass(\Roolith\GeneratorFactory::class);
+        $reflectionClass = new ReflectionClass(\Roolith\Generator\GeneratorFactory::class);
 
         $this->assertEquals('getInstance', $reflectionClass->getMethod('getInstance')->name);
     }

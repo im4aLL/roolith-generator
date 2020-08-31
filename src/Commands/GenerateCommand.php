@@ -1,11 +1,11 @@
 <?php
-namespace Roolith\Commands;
+namespace Roolith\Generator\Commands;
 
-use Roolith\Command;
-use Roolith\Console;
-use Roolith\FileGenerator;
-use Roolith\FileParser;
-use Roolith\Interfaces\CommandInterface;
+use Roolith\Generator\Command;
+use Roolith\Generator\Console;
+use Roolith\Generator\FileGenerator;
+use Roolith\Generator\FileParser;
+use Roolith\Generator\Interfaces\CommandInterface;
 
 class GenerateCommand implements CommandInterface
 {

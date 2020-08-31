@@ -2,11 +2,11 @@
 require_once __DIR__. '/TestMockCommandClass.php';
 
 use PHPUnit\Framework\TestCase;
-use Roolith\Command;
-use Roolith\Console;
-use Roolith\FileGenerator;
-use Roolith\FileParser;
-use Roolith\Generator;
+use Roolith\Generator\Command;
+use Roolith\Generator\Console;
+use Roolith\Generator\FileGenerator;
+use Roolith\Generator\FileParser;
+use Roolith\Generator\Generator;
 
 class GeneratorTest extends TestCase
 {

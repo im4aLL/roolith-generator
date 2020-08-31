@@ -11,7 +11,7 @@ After install generator via composer, create a file `index.php` and add followin
 
 ```php
 <?php
-use Roolith\GeneratorFactory;
+use Roolith\Generator\GeneratorFactory;
 
 require_once __DIR__ . '/PATH_TO_YOUR_VENDOR/vendor/autoload.php';
 
@@ -68,11 +68,11 @@ To make this work, create a `TestCommand.php` class and it should look like foll
 
 ```php
 <?php
-use Roolith\Command;
-use Roolith\Console;
-use Roolith\FileGenerator;
-use Roolith\FileParser;
-use Roolith\Interfaces\CommandInterface;
+use Roolith\Generator\Command;
+use Roolith\Generator\Console;
+use Roolith\Generator\FileGenerator;
+use Roolith\Generator\FileParser;
+use Roolith\Generator\Interfaces\CommandInterface;
 
 class TestCommand implements CommandInterface
 {
