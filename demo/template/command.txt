@@ -6,7 +6,7 @@ use Roolith\FileGenerator;
 use Roolith\FileParser;
 use Roolith\Interfaces\CommandInterface;
 
-class {{name}}Command implements CommandInterface
+class {{name}} implements CommandInterface
 {
     public function register()
     {

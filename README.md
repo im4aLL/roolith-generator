@@ -30,7 +30,7 @@ Now create a folder on project root called `template` and inside `template` fold
 <?php
 namespace Something;
 
-class {{name}}Controller extends Controller
+class {{name}} extends Controller
 {
     public function index()
     {
@@ -43,13 +43,13 @@ class {{name}}Controller extends Controller
 
 ```
 
-`outputBaseDir` means - in which folder file will be generated.\
+`outputBaseDir` means - in which folder file will be generated.
 `{{name}}` means command name argument.
 
 Now run following command 
 
 ```shell script
-php index.php generate controller Demo
+php index.php generate controller DemoController
 ```
 
 It should create a `DemoController.php` inside `Controllers` folder. If you want to add another template then add test.txt and add your template code and run following command - 
