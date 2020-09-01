@@ -49,14 +49,14 @@ class FileParser
         $lines = explode("\n", $content);
         fclose($fp);
 
-        return $this->bindValue($lines, $value, $type);
+        return $this->bindValue($lines, $value);
     }
 
-    private function bindValue($lines, $value, $type)
+    private function bindValue($lines, $value)
     {
         $result = [];
         $instructions = [
-            FileConstants::FILE_NAME => $this->titleCase($value).$this->titleCase($type),
+            FileConstants::FILE_NAME => $this->titleCase($value),
         ];
 
         foreach ($lines as $line) {

@@ -35,7 +35,7 @@ class FileGeneratorTest extends TestCase
     public function testShouldSaveFile()
     {
         $this->instance->setProjectBaseDir(__DIR__);
-        $parsedTemplateData = $this->fileParser->setDirectory(__DIR__.'/test-template')->parseTemplate('controller', 'demo');
+        $parsedTemplateData = $this->fileParser->setDirectory(__DIR__.'/test-template')->parseTemplate('controller', 'demoController');
         $saved = $this->instance->save($parsedTemplateData['lines'], $parsedTemplateData['instructions'], $this->console);
         $fileExists = file_exists(__DIR__.'/'.$parsedTemplateData['instructions']['outputBaseDir'].'/DemoController.'.$this->instance->getConfig()['extension']);
         $this->instance->deleteDir(__DIR__.'/'.$parsedTemplateData['instructions']['outputBaseDir']);
