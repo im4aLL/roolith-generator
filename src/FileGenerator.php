@@ -30,7 +30,7 @@ class FileGenerator
 
     public function save($lines, $instructions, Console $console)
     {
-        $content = implode($lines);
+        $content = implode("\n", $lines);
         $outputDir = $this->getOutputDirByInstructions($instructions);
         $fileName = $this->getOutputFileNameByInstruction($instructions);
         $completeFilePath = $outputDir.'/'.$fileName;
