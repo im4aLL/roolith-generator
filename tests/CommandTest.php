@@ -54,4 +54,68 @@ class CommandTest extends TestCase
         $this->command->register($registrationArray);
         $this->assertEquals('generate', $this->command->getRegisteredCommandByName('g')['name']);
     }
+
+    public function testShouldReturnRawTypeWhenCommandHasNoTypeAlias()
+    {
+        $this->command->bootstrap(['generate', 'controller', 'Demo']);
+        $this->command->register(['name' => 'generate']);
+        $this->assertEquals('controller', $this->command->type());
+    }
+
+    public function testShouldResolveTypeViaCommandAlias()
+    {
+        $this->command->bootstrap(['g', 'c', 'Demo']);
+
+        $classInstance = new TestMockCommandClass();
+        $registrationArray = $classInstance->register();
+        $registrationArray['instance'] = $classInstance;
+
+        $this->command->register($registrationArray);
+        $this->assertEquals('controller', $this->command->type());
+    }
+
+    public function testShouldReturnNullWhenRegistryEntryMissesNameAndAlias()
+    {
+        $this->command->register(['foo' => 'bar']);
+        $this->assertNull($this->command->getRegisteredCommandByName('x'));
+    }
+
+    public function testShouldIgnoreRegistryEntryWithoutAliasKey()
+    {
+        $this->command->register(['name' => 'generate']);
+        $this->assertNull($this->command->getRegisteredCommandByName('missing'));
+        $this->assertEquals('generate', $this->command->getRegisteredCommandByName('generate')['name']);
+    }
+
+    public function testShouldReturnRawTypeWhenTypeAliasIsScalar()
+    {
+        $this->command->bootstrap(['generate', 'c', 'Demo']);
+        $this->command->register(['name' => 'generate', 'alias' => ['g'], 'typeAlias' => 'controller']);
+        $this->assertEquals('c', $this->command->type());
+    }
+
+    public function testShouldReturnRawTypeWhenTypeAliasValueIsScalar()
+    {
+        $this->command->bootstrap(['generate', 'c', 'Demo']);
+        $this->command->register(['name' => 'generate', 'alias' => ['g'], 'typeAlias' => ['controller' => 'c']]);
+        $this->assertEquals('c', $this->command->type());
+    }
+
+    public function testShouldFindCommandByStringAlias()
+    {
+        $this->command->register(['name' => 'generate', 'alias' => 'g']);
+        $this->assertEquals('generate', $this->command->getRegisteredCommandByName('g')['name']);
+    }
+
+    public function testShouldReturnRawTypeWhenNoTypeAliasMatches()
+    {
+        $this->command->bootstrap(['generate', 'service', 'Demo']);
+
+        $classInstance = new TestMockCommandClass();
+        $registrationArray = $classInstance->register();
+        $registrationArray['instance'] = $classInstance;
+
+        $this->command->register($registrationArray);
+        $this->assertEquals('service', $this->command->type());
+    }
 }

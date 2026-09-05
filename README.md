@@ -118,6 +118,14 @@ Command
  ✔ Should get argument value
  ✔ Should get argument type with alias
  ✔ Should get registered command by name
+ ✔ Should return raw type when command has no type alias
+ ✔ Should resolve type via command alias
+ ✔ Should return null when registry entry misses name and alias
+ ✔ Should ignore registry entry without alias key
+ ✔ Should return raw type when type alias is scalar
+ ✔ Should return raw type when type alias value is scalar
+ ✔ Should find command by string alias
+ ✔ Should return raw type when no type alias matches
 
 Console
  ✔ Should set arguments
@@ -148,5 +156,5 @@ Generator
 
 Time: 00:00.012, Memory: 6.00 MB
 
-OK (22 tests, 28 assertions)
+OK (30 tests, 37 assertions)
 ```

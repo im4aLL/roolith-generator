@@ -3,7 +3,9 @@
     "description": "Generate php file using php",
     "license": "MIT",
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "php": ">=8.0"
+    },
     "type": "library",
     "authors": [
         {

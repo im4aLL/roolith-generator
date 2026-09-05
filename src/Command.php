@@ -30,9 +30,9 @@ class Command
         $type = $this->getArgumentValueByIndex(1);
         $command = $this->getRegisteredCommandByName($this->name());
 
-        if ($command['typeAlias']) {
+        if (isset($command['typeAlias']) && is_array($command['typeAlias'])) {
             foreach ($command['typeAlias'] as $aliasKey => $aliasValueArray) {
-                if (in_array($type, $aliasValueArray)) {
+                if (is_array($aliasValueArray) && in_array($type, $aliasValueArray)) {
                     return $aliasKey;
                 }
             }
@@ -64,11 +64,11 @@ class Command
     public function getRegisteredCommandByName($name)
     {
         foreach ($this->getRegistry() as $command) {
-            if ($command['name'] === $name) {
+            if (isset($command['name']) && $command['name'] === $name) {
                 return $command;
             }
 
-            if ($command['alias']) {
+            if (!empty($command['alias'])) {
                 $typeOfName = gettype($command['alias']);
 
                 if ($typeOfName === 'string' && $command['alias'] === $name) {
