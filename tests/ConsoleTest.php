@@ -33,4 +33,25 @@ class ConsoleTest extends TestCase
 
         $this->assertTrue($this->console->hasArgument());
     }
+
+    public function testShouldOutputMessage()
+    {
+        $this->expectOutputString('hello');
+
+        $this->console->output('hello');
+    }
+
+    public function testShouldOutputNewLine()
+    {
+        $this->expectOutputString(PHP_EOL);
+
+        $this->console->outputNewLine();
+    }
+
+    public function testShouldOutputMessageWithNewLine()
+    {
+        $this->expectOutputString('Location: /tmp/file.php' . PHP_EOL);
+
+        $this->console->outputLine('Location: /tmp/file.php');
+    }
 }

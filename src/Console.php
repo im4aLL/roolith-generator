@@ -42,6 +42,7 @@ class Console
 
     public function outputLine($message)
     {
+        $this->output($message);
         $this->outputNewLine();
     }
 
