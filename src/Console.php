@@ -5,7 +5,6 @@ namespace Roolith\Generator;
 class Console
 {
     private $arguments;
-    private $consoleColor;
 
     public function __construct()
     {

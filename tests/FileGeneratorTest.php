@@ -43,4 +43,36 @@ class FileGeneratorTest extends TestCase
         $this->assertTrue($saved['created']);
         $this->assertTrue($fileExists);
     }
+
+    public function testShouldSaveFileWithoutOutputBaseDir()
+    {
+        $baseDir = sys_get_temp_dir().'/filegen-'.uniqid();
+        mkdir($baseDir, 0755, true);
+        $this->instance->setProjectBaseDir($baseDir);
+
+        $saved = $this->instance->save(['hello'], ['fileName' => 'NoDirFile'], $this->console);
+
+        $this->assertTrue($saved['created']);
+        $this->assertEquals($baseDir.'/NoDirFile.php', $saved['completeFilePath']);
+        $this->assertTrue(file_exists($saved['completeFilePath']));
+
+        unlink($saved['completeFilePath']);
+        rmdir($baseDir);
+    }
+
+    public function testShouldSaveFileWithEmptyInstructions()
+    {
+        $baseDir = sys_get_temp_dir().'/filegen-'.uniqid();
+        mkdir($baseDir, 0755, true);
+        $this->instance->setProjectBaseDir($baseDir);
+
+        $saved = $this->instance->save(['hello'], [], $this->console);
+
+        $this->assertTrue($saved['created']);
+        $this->assertEquals($baseDir.'/.php', $saved['completeFilePath']);
+        $this->assertTrue(file_exists($saved['completeFilePath']));
+
+        unlink($saved['completeFilePath']);
+        rmdir($baseDir);
+    }
 }

@@ -71,10 +71,8 @@ class FileGenerator
     {
         $dirString = $this->projectBaseDir;
 
-        if (count($instructions) > 0) {
-            if ($instructions[FileConstants::OUTPUT_BASE_DIR]) {
-                $dirString .= '/'.$instructions[FileConstants::OUTPUT_BASE_DIR];
-            }
+        if (is_array($instructions) && isset($instructions[FileConstants::OUTPUT_BASE_DIR]) && $instructions[FileConstants::OUTPUT_BASE_DIR]) {
+            $dirString .= '/'.$instructions[FileConstants::OUTPUT_BASE_DIR];
         }
 
         return $dirString;
@@ -82,7 +80,9 @@ class FileGenerator
 
     private function getOutputFileNameByInstruction($instructions)
     {
-        return $instructions[FileConstants::FILE_NAME].'.'.$this->config['extension'];
+        $fileName = (is_array($instructions) && isset($instructions[FileConstants::FILE_NAME])) ? $instructions[FileConstants::FILE_NAME] : '';
+
+        return $fileName.'.'.$this->config['extension'];
     }
 
     private function makeFolderIfDoesntExist($outputDir)
