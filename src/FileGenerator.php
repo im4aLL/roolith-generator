@@ -53,18 +53,29 @@ class FileGenerator
         ];
     }
 
-    private function getOverwriteConfirmation()
+    private function getOverwriteConfirmation($handle = null)
     {
-        $handle = fopen('php://stdin', 'r');
-        $line = fgets($handle);
+        if ($handle === null) {
+            $handle = fopen('php://stdin', 'r');
 
-        if(trim($line) === 'yes' || trim($line) === 'y'){
-            return true;
+            if ($handle === false) {
+                return false;
+            }
         }
 
-        fclose($handle);
+        $line = fgets($handle);
 
-        return false;
+        if (is_resource($handle)) {
+            fclose($handle);
+        }
+
+        if (!is_string($line)) {
+            return false;
+        }
+
+        $answer = strtolower(trim($line));
+
+        return $answer === 'yes' || $answer === 'y';
     }
 
     private function getOutputDirByInstructions($instructions)

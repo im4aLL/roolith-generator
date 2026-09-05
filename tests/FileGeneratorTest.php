@@ -75,4 +75,46 @@ class FileGeneratorTest extends TestCase
         unlink($saved['completeFilePath']);
         rmdir($baseDir);
     }
+
+    public function testShouldConfirmOverwriteOnYesVariants()
+    {
+        foreach (['yes', 'YES', 'Yes', 'y', 'Y', "  yes  \n", "  Y  \n"] as $input) {
+            $handle = $this->givenInputStream($input);
+            $this->assertTrue($this->invokeGetOverwriteConfirmation($handle), 'Failed for input: '.var_export($input, true));
+            $this->assertFalse(is_resource($handle), 'Handle leaked for input: '.var_export($input, true));
+        }
+    }
+
+    public function testShouldDeclineOverwriteOnNoVariantsAndEmpty()
+    {
+        foreach (['no', 'NO', 'n', 'N', '', "\n", 'ye', 'yess', 'nope'] as $input) {
+            $handle = $this->givenInputStream($input);
+            $this->assertFalse($this->invokeGetOverwriteConfirmation($handle), 'Failed for input: '.var_export($input, true));
+            $this->assertFalse(is_resource($handle), 'Handle leaked for input: '.var_export($input, true));
+        }
+    }
+
+    public function testShouldDeclineOverwriteOnEof()
+    {
+        $handle = fopen('php://memory', 'r');
+        $this->assertFalse($this->invokeGetOverwriteConfirmation($handle));
+        $this->assertFalse(is_resource($handle));
+    }
+
+    private function givenInputStream($content)
+    {
+        $handle = fopen('php://memory', 'r+');
+        fwrite($handle, $content);
+        rewind($handle);
+
+        return $handle;
+    }
+
+    private function invokeGetOverwriteConfirmation($handle)
+    {
+        $method = new \ReflectionMethod(FileGenerator::class, 'getOverwriteConfirmation');
+        $method->setAccessible(true);
+
+        return $method->invoke($this->instance, $handle);
+    }
 }
