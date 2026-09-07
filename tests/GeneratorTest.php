@@ -127,14 +127,14 @@ class GeneratorTest extends TestCase
 
 abstract class AbstractTestMockCommand implements \Roolith\Generator\Interfaces\CommandInterface
 {
-    abstract public function register();
+    abstract public function register(): array;
 
     abstract public function handle(
         \Roolith\Generator\Command $command,
         \Roolith\Generator\Console $console,
         \Roolith\Generator\FileParser $fileParser,
         \Roolith\Generator\FileGenerator $fileGenerator
-    );
+    ): mixed;
 }
 
 class RequiredArgsTestMockCommand implements \Roolith\Generator\Interfaces\CommandInterface
@@ -143,7 +143,7 @@ class RequiredArgsTestMockCommand implements \Roolith\Generator\Interfaces\Comma
     {
     }
 
-    public function register()
+    public function register(): array
     {
         return ['name' => 'required-args'];
     }
@@ -153,6 +153,6 @@ class RequiredArgsTestMockCommand implements \Roolith\Generator\Interfaces\Comma
         \Roolith\Generator\Console $console,
         \Roolith\Generator\FileParser $fileParser,
         \Roolith\Generator\FileGenerator $fileGenerator
-    ) {
+    ): mixed {
     }
 }

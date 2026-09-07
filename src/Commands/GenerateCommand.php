@@ -7,9 +7,17 @@ use Roolith\Generator\FileGenerator;
 use Roolith\Generator\FileParser;
 use Roolith\Generator\Interfaces\CommandInterface;
 
+/**
+ * Handles the generate command for scaffolding files from templates.
+ */
 class GenerateCommand implements CommandInterface
 {
-    public function register()
+    /**
+     * Describe this command for registration.
+     *
+     * @return array<string, mixed>
+     */
+    public function register(): array
     {
         return [
             'name' => 'generate',
@@ -23,7 +31,16 @@ class GenerateCommand implements CommandInterface
         ];
     }
 
-    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator)
+    /**
+     * Generate a file from the requested template.
+     *
+     * @param Command $command
+     * @param Console $console
+     * @param FileParser $fileParser
+     * @param FileGenerator $fileGenerator
+     * @return mixed
+     */
+    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator): mixed
     {
         $type = $command->type();
 
@@ -51,10 +68,10 @@ class GenerateCommand implements CommandInterface
         $saved = $fileGenerator->save($parsedTemplateData['lines'], $parsedTemplateData['instructions'], $console);
 
         if ($saved['created']) {
-            $console->output($saved['filename'].' has been created!');
+            $console->outputLine($saved['filename'].' has been created!');
             $console->outputLine('Location: '.$saved['completeFilePath']);
         } else {
-            $console->output('Unable to create file!');
+            $console->outputLine('Unable to create file!');
         }
 
         $console->outputNewLine();

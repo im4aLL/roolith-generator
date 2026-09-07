@@ -105,7 +105,7 @@ class FileGenerator
 
         $normalizedOutput = rtrim($outputDir, '/');
 
-        while (strpos($normalizedOutput, '//') === 0) {
+        while (str_starts_with($normalizedOutput, '//')) {
             $normalizedOutput = substr($normalizedOutput, 1);
         }
 
@@ -235,7 +235,7 @@ class FileGenerator
                 return true;
             }
 
-            if (strpos($dir, '\\') !== false) {
+            if (str_contains($dir, '\\')) {
                 return true;
             }
 
@@ -253,11 +253,11 @@ class FileGenerator
                 return true;
             }
 
-            if (strpos($name, '/') !== false || strpos($name, '\\') !== false) {
+            if (str_contains($name, '/') || str_contains($name, '\\')) {
                 return true;
             }
 
-            if ($name === '.' || $name === '..' || strpos($name, '..') !== false) {
+            if ($name === '.' || $name === '..' || str_contains($name, '..')) {
                 return true;
             }
         }
@@ -295,11 +295,11 @@ class FileGenerator
         $base = rtrim($baseDir, '/');
         $target = rtrim($path, '/');
 
-        while (strpos($target, '//') === 0) {
+        while (str_starts_with($target, '//')) {
             $target = substr($target, 1);
         }
 
-        if ($target !== $base && strpos($target, $base.'/') !== 0) {
+        if ($target !== $base && !str_starts_with($target, $base.'/')) {
             return true;
         }
 

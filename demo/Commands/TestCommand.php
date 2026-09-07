@@ -1,1 +1,7 @@
-<?phpuse Roolith\Generator\Command;use Roolith\Generator\Console;use Roolith\Generator\FileGenerator;use Roolith\Generator\FileParser;use Roolith\Generator\Interfaces\CommandInterface;class TestCommand implements CommandInterface{    public function register()    {        return [            'name' => 'test',            'alias' => [],            'typeAlias' => [],        ];    }    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator)    {        $console->output('Test command registered!');    }}
+<?phpuse Roolith\Generator\Command;use Roolith\Generator\Console;use Roolith\Generator\FileGenerator;use Roolith\Generator\FileParser;use Roolith\Generator\Interfaces\CommandInterface;class TestCommand implements CommandInterface
+{
+    public function register(): array
+    {        return [            'name' => 'test',            'alias' => [],            'typeAlias' => [],        ];    }    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator): mixed
+    {
+        $console->output('Test command registered!');
+    }}

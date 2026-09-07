@@ -6,44 +6,72 @@ use ReflectionClass;
 use Roolith\Generator\Commands\GenerateCommand;
 use Roolith\Generator\Interfaces\CommandInterface;
 
+/**
+ * Coordinates console input with registered command handlers.
+ */
 class Generator
 {
-    protected $console;
-    protected $fileParser;
-    protected $command;
-    protected $fileGenerator;
-
-    public $defaultCommandClass = [
+    /**
+     * Default command classes registered on construction.
+     *
+     * @var array<int, class-string<CommandInterface>>
+     */
+    public array $defaultCommandClass = [
         GenerateCommand::class
     ];
 
-    public function __construct(Console $console, FileParser $fileParser, Command $command, FileGenerator $fileGenerator)
-    {
-        $this->console = $console;
-        $this->fileParser = $fileParser;
-        $this->command = $command;
-        $this->fileGenerator = $fileGenerator;
-
-        if (is_array($this->defaultCommandClass) && count($this->defaultCommandClass) > 0) {
+    /**
+     * Create generator with console, parser, command, and file writer.
+     *
+     * @param Console $console
+     * @param FileParser $fileParser
+     * @param Command $command
+     * @param FileGenerator $fileGenerator
+     */
+    public function __construct(
+        protected Console $console,
+        protected FileParser $fileParser,
+        protected Command $command,
+        protected FileGenerator $fileGenerator
+    ) {
+        if (count($this->defaultCommandClass) > 0) {
             $this->registerCommandClass($this->defaultCommandClass);
         }
     }
 
-    public function setTemplateDirectory($directory)
+    /**
+     * Set template directory path.
+     *
+     * @param string $directory
+     * @return self
+     */
+    public function setTemplateDirectory(string $directory): self
     {
         $this->fileParser->setDirectory($directory);
 
         return $this;
     }
 
-    public function setProjectBaseDirectory($directory)
+    /**
+     * Set project base directory for generated files.
+     *
+     * @param string $directory
+     * @return self
+     */
+    public function setProjectBaseDirectory(string $directory): self
     {
         $this->fileGenerator->setProjectBaseDir($directory);
 
         return $this;
     }
 
-    public function watch($arguments)
+    /**
+     * Dispatch raw CLI arguments to the matching command handler.
+     *
+     * @param string[] $arguments
+     * @return self
+     */
+    public function watch(array $arguments): self
     {
         $this->console->setArguments($arguments);
 
@@ -61,7 +89,14 @@ class Generator
         return $this;
     }
 
-    public function registerCommandClass($commandClassArray)
+    /**
+     * Register command classes that implement CommandInterface.
+     *
+     * @param mixed $commandClassArray Expects array<int, class-string<CommandInterface>>.
+     * @return self
+     * @throws InvalidArgumentException When the list or a command class is invalid.
+     */
+    public function registerCommandClass(mixed $commandClassArray): self
     {
         if (!is_array($commandClassArray)) {
             throw new InvalidArgumentException("Command class list must be an array.");

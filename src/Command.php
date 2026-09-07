@@ -2,37 +2,77 @@
 namespace Roolith\Generator;
 
 
+/**
+ * Holds CLI arguments and registered command definitions.
+ */
 class Command
 {
-    private $arguments;
-    private $registry;
+    /**
+     * CLI arguments without script name.
+     *
+     * @var string[]
+     */
+    private array $arguments;
 
+    /**
+     * Registered command definitions.
+     *
+     * @var array<int, array<string, mixed>>
+     */
+    private array $registry;
+
+    /**
+     * Initialize empty arguments and registry.
+     */
     public function __construct()
     {
         $this->arguments = [];
         $this->registry = [];
     }
 
-    public function bootstrap($arguments)
+    /**
+     * Set CLI arguments for this command.
+     *
+     * @param string[] $arguments
+     * @return self
+     */
+    public function bootstrap(array $arguments): self
     {
         $this->arguments = $arguments;
 
         return $this;
     }
 
-    public function name()
+    /**
+     * Get command name from first argument.
+     *
+     * @return string|null
+     */
+    public function name(): ?string
     {
-        return $this->getArgumentValueByIndex(0);
+        $value = $this->getArgumentValueByIndex(0);
+
+        return is_string($value) ? $value : null;
     }
 
-    public function type()
+    /**
+     * Get command type from second argument, resolving type aliases.
+     *
+     * @return string|null
+     */
+    public function type(): ?string
     {
         $type = $this->getArgumentValueByIndex(1);
+
+        if (!is_string($type)) {
+            return null;
+        }
+
         $command = $this->getRegisteredCommandByName($this->name());
 
         if (isset($command['typeAlias']) && is_array($command['typeAlias'])) {
             foreach ($command['typeAlias'] as $aliasKey => $aliasValueArray) {
-                if (is_array($aliasValueArray) && in_array($type, $aliasValueArray)) {
+                if (is_array($aliasValueArray) && in_array($type, $aliasValueArray, true)) {
                     return $aliasKey;
                 }
             }
@@ -41,41 +81,77 @@ class Command
         return $type;
     }
 
-    public function value()
+    /**
+     * Get command value from third argument.
+     *
+     * @return string|null
+     */
+    public function value(): ?string
     {
-        return $this->getArgumentValueByIndex(2);
+        $value = $this->getArgumentValueByIndex(2);
+
+        return is_string($value) ? $value : null;
     }
 
-    private function getArgumentValueByIndex($index)
+    /**
+     * Get raw argument value by position.
+     *
+     * @param int $index
+     * @return mixed
+     */
+    private function getArgumentValueByIndex(int $index): mixed
     {
-        return isset($this->arguments[$index]) ? $this->arguments[$index] : null;
+        return $this->arguments[$index] ?? null;
     }
 
-    public function getRegistry()
+    /**
+     * Get all registered command definitions.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getRegistry(): array
     {
         return $this->registry;
     }
 
-    public function register($registry)
+    /**
+     * Register a command definition.
+     *
+     * @param array<string, mixed> $registry
+     * @return void
+     */
+    public function register(array $registry): void
     {
         $this->registry[] = $registry;
     }
 
-    public function getRegisteredCommandByName($name)
+    /**
+     * Find a registered command by name or alias.
+     *
+     * @param string|null $name
+     * @return array<string, mixed>|null
+     */
+    public function getRegisteredCommandByName(?string $name): ?array
     {
+        if ($name === null || $name === '') {
+            return null;
+        }
+
         foreach ($this->getRegistry() as $command) {
+            if (!is_array($command)) {
+                continue;
+            }
+
             if (isset($command['name']) && $command['name'] === $name) {
                 return $command;
             }
 
             if (!empty($command['alias'])) {
-                $typeOfName = gettype($command['alias']);
-
-                if ($typeOfName === 'string' && $command['alias'] === $name) {
+                if (is_string($command['alias']) && $command['alias'] === $name) {
                     return $command;
                 }
 
-                if ($typeOfName === 'array' && in_array($name, $command['alias'])) {
+                if (is_array($command['alias']) && in_array($name, $command['alias'], true)) {
                     return $command;
                 }
             }

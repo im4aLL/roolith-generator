@@ -7,7 +7,7 @@ use Roolith\Generator\Interfaces\CommandInterface;
 
 class TestMockCommandClass implements CommandInterface
 {
-    public function register()
+    public function register(): array
     {
         return [
             'name' => 'generate',
@@ -21,7 +21,7 @@ class TestMockCommandClass implements CommandInterface
         ];
     }
 
-    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator)
+    public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator): mixed
     {
         $console->output('Test command registered!');
     }
