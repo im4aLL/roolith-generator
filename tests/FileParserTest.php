@@ -94,4 +94,31 @@ class FileParserTest extends TestCase
             }
         }
     }
+
+    public function testShouldInsertPlaceholderValuesLiterally()
+    {
+        $templateDir = sys_get_temp_dir().'/fileparser-'.uniqid();
+
+        $this->assertTrue(mkdir($templateDir, 0755, true));
+        file_put_contents($templateDir.'/special.txt', "class {{name}} extends {name}Controller // {{name}}-{name}");
+
+        $this->instance->setDirectory($templateDir);
+
+        try {
+            $value = 'a$1b\\c$d$0\\1';
+            $parsedTemplate = $this->instance->parseTemplate('special', $value);
+
+            $this->assertIsArray($parsedTemplate);
+            $expected = 'class A$1b\\c$d$0\\1 extends a$1b\\c$d$0\\1Controller // A$1b\\c$d$0\\1-a$1b\\c$d$0\\1';
+            $this->assertSame([$expected], $parsedTemplate['lines']);
+        } finally {
+            if (is_file($templateDir.'/special.txt')) {
+                unlink($templateDir.'/special.txt');
+            }
+
+            if (is_dir($templateDir)) {
+                rmdir($templateDir);
+            }
+        }
+    }
 }
