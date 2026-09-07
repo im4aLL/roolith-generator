@@ -32,7 +32,7 @@ class FileParser
 
     public function templateExists($name)
     {
-        return file_exists($this->getFilePathByName($name));
+        return is_file($this->getFilePathByName($name));
     }
 
     private function getFilePathByName($name)
@@ -43,11 +43,18 @@ class FileParser
     public function parseTemplate($type, $value)
     {
         $filename = $this->getFilePathByName($type);
-        $fp = fopen($filename, 'r');
 
-        $content = fread($fp, filesize($filename));
+        if (!is_file($filename) || !is_readable($filename)) {
+            return null;
+        }
+
+        $content = file_get_contents($filename);
+
+        if ($content === false) {
+            return null;
+        }
+
         $lines = explode("\n", $content);
-        fclose($fp);
 
         return $this->bindValue($lines, $value);
     }

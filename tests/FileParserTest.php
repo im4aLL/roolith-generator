@@ -54,4 +54,44 @@ class FileParserTest extends TestCase
         $this->assertIsArray($parsedTemplate['instructions']);
         $this->assertIsArray($parsedTemplate['lines']);
     }
+
+    public function testShouldReturnNullWhenTemplateDoesNotExist()
+    {
+        $templateDir = __DIR__. '/test-template';
+        $this->instance->setDirectory($templateDir);
+
+        $this->assertNull($this->instance->parseTemplate('xxx-missing-template', 'demo'));
+    }
+
+    public function testShouldReturnNullWhenTemplateDirectoryDoesNotExist()
+    {
+        $this->instance->setDirectory(sys_get_temp_dir().'/fileparser-missing-'.uniqid());
+
+        $this->assertNull($this->instance->parseTemplate('controller', 'demo'));
+    }
+
+    public function testShouldParseEmptyTemplateWithoutError()
+    {
+        $templateDir = sys_get_temp_dir().'/fileparser-'.uniqid();
+
+        $this->assertTrue(mkdir($templateDir, 0755, true));
+        file_put_contents($templateDir.'/empty.txt', '');
+
+        $this->instance->setDirectory($templateDir);
+
+        try {
+            $parsedTemplate = $this->instance->parseTemplate('empty', 'demo');
+
+            $this->assertIsArray($parsedTemplate);
+            $this->assertSame([''], $parsedTemplate['lines']);
+        } finally {
+            if (is_file($templateDir.'/empty.txt')) {
+                unlink($templateDir.'/empty.txt');
+            }
+
+            if (is_dir($templateDir)) {
+                rmdir($templateDir);
+            }
+        }
+    }
 }
