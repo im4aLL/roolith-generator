@@ -1,7 +1,10 @@
 <?php
 namespace Roolith\Generator;
 
+use InvalidArgumentException;
+use ReflectionClass;
 use Roolith\Generator\Commands\GenerateCommand;
+use Roolith\Generator\Interfaces\CommandInterface;
 
 class Generator
 {
@@ -60,8 +63,33 @@ class Generator
 
     public function registerCommandClass($commandClassArray)
     {
+        if (!is_array($commandClassArray)) {
+            throw new InvalidArgumentException("Command class list must be an array.");
+        }
+
         foreach ($commandClassArray as $commandClass) {
-            $classInstance = new $commandClass();
+            if (!is_string($commandClass) || (!class_exists($commandClass) && !interface_exists($commandClass))) {
+                throw new InvalidArgumentException("Command class '".(is_string($commandClass) ? $commandClass : gettype($commandClass))."' does not exist.");
+            }
+
+            if (!is_subclass_of($commandClass, CommandInterface::class, true)) {
+                throw new InvalidArgumentException("Command class '".$commandClass."' must implement CommandInterface.");
+            }
+
+            $reflection = new ReflectionClass($commandClass);
+
+            if (!$reflection->isInstantiable()) {
+                throw new InvalidArgumentException("Command class '".$commandClass."' must be instantiable.");
+            }
+
+            $constructor = $reflection->getConstructor();
+
+            if ($constructor !== null && $constructor->getNumberOfRequiredParameters() > 0) {
+                throw new InvalidArgumentException("Command class '".$commandClass."' must have no required constructor parameters.");
+            }
+
+            $classInstance = $reflection->newInstance();
+
             $registrationArray = $classInstance->register();
             $registrationArray['instance'] = $classInstance;
 

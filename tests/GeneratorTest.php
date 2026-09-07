@@ -56,4 +56,103 @@ class GeneratorTest extends TestCase
 
         $this->assertEquals($result, $this->instance);
     }
+
+    public function testShouldThrowWhenCommandClassDoesNotExist()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/does not exist/");
+
+        $this->instance->registerCommandClass([
+            'NonExistent\\CommandClass',
+        ]);
+    }
+
+    public function testShouldThrowWhenCommandClassDoesNotImplementInterface()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/must implement CommandInterface/");
+
+        $this->instance->registerCommandClass([
+            stdClass::class,
+        ]);
+    }
+
+    public function testShouldThrowWhenCommandClassIsNotAString()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->instance->registerCommandClass([
+            123,
+        ]);
+    }
+
+    public function testShouldThrowWhenCommandClassListIsNotAnArray()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/must be an array/");
+
+        $this->instance->registerCommandClass('TestMockCommandClass');
+    }
+
+    public function testShouldThrowWhenCommandClassIsInterface()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/must implement CommandInterface/");
+
+        $this->instance->registerCommandClass([
+            \Roolith\Generator\Interfaces\CommandInterface::class,
+        ]);
+    }
+
+    public function testShouldThrowWhenCommandClassIsAbstract()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/must be instantiable/");
+
+        $this->instance->registerCommandClass([
+            AbstractTestMockCommand::class,
+        ]);
+    }
+
+    public function testShouldThrowWhenCommandClassRequiresConstructorArguments()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/no required constructor parameters/");
+
+        $this->instance->registerCommandClass([
+            RequiredArgsTestMockCommand::class,
+        ]);
+    }
+}
+
+abstract class AbstractTestMockCommand implements \Roolith\Generator\Interfaces\CommandInterface
+{
+    abstract public function register();
+
+    abstract public function handle(
+        \Roolith\Generator\Command $command,
+        \Roolith\Generator\Console $console,
+        \Roolith\Generator\FileParser $fileParser,
+        \Roolith\Generator\FileGenerator $fileGenerator
+    );
+}
+
+class RequiredArgsTestMockCommand implements \Roolith\Generator\Interfaces\CommandInterface
+{
+    public function __construct($required)
+    {
+    }
+
+    public function register()
+    {
+        return ['name' => 'required-args'];
+    }
+
+    public function handle(
+        \Roolith\Generator\Command $command,
+        \Roolith\Generator\Console $console,
+        \Roolith\Generator\FileParser $fileParser,
+        \Roolith\Generator\FileGenerator $fileGenerator
+    ) {
+    }
 }
