@@ -1,1 +1,13 @@
-<?phpnamespace Something;class DemoController extends Controller{    public function index()    {    }    public function create()    {    }}
+<?php
+namespace Something;
+
+class DemoController extends Controller
+{
+    public function index()
+    {
+    }
+
+    public function create()
+    {
+    }
+}

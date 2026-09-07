@@ -110,6 +110,7 @@ class FileParser
             return null;
         }
 
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
         $lines = explode("\n", $content);
 
         return $this->bindValue($lines, $value ?? '');

@@ -78,7 +78,7 @@ class FileGenerator
      */
     public function save(array $lines, mixed $instructions, Console $console): array
     {
-        $content = implode("\n", $lines);
+        $content = str_replace(["\r\n", "\r"], "\n", implode("\n", $lines));
         $outputDir = $this->getOutputDirByInstructions($instructions);
         $fileName = $this->getOutputFileNameByInstruction($instructions);
         $completeFilePath = $outputDir.'/'.$fileName;
