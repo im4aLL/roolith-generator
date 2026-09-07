@@ -1,30 +1,28 @@
 # roolith-generator
 Generate php file using php
 
-### install
-```shell script
+### Install
+```shell
 composer require roolith/generator
 ```
 
-### usage
-After install generator via composer, create a file `index.php` and add following code - 
-
+### Setup
+Create `index.php`:
 ```php
 <?php
 use Roolith\Generator\GeneratorFactory;
 
-require_once __DIR__ . '/PATH_TO_YOUR_VENDOR/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 $generator = GeneratorFactory::getInstance();
 $generator
-    ->setTemplateDirectory(__DIR__.'/template') // this is your template directory
-    ->setProjectBaseDirectory(__DIR__) // this is project base directory
-    ->watch($argv); // this $argv to get console arguments
-
+    ->setTemplateDirectory(__DIR__.'/template')
+    ->setProjectBaseDirectory(__DIR__)
+    ->watch($argv);
 ```
 
-Now create a folder on project root called `template` and inside `template` folder create a file called `controller.txt` and add following code - 
-
+### Add a template
+Create `template/controller.txt`:
 ```text
 # outputBaseDir: Controllers
 <?php
@@ -32,40 +30,39 @@ namespace Something;
 
 class {{name}} extends Controller
 {
-    public function index()
-    {
-    }
-
-    public function create()
-    {
-    }
 }
-
 ```
 
-`outputBaseDir` means - in which folder file will be generated.
-`{{name}}` means command name argument.
+* First line sets output folder.
+* `{{name}}` is replaced with name in title case, `{name}` keeps raw value.
 
-Now run following command 
-
-```shell script
+Generate:
+```shell
 php index.php generate controller DemoController
+php index.php g c DemoController
 ```
 
-It should create a `DemoController.php` inside `Controllers` folder. If you want to add another template then add test.txt and add your template code and run following command - 
+This creates `Controllers/DemoController.php`. To add another type, just add another template file. Example `template/model.txt`:
+```text
+# outputBaseDir: Models
+<?php
+namespace Something;
 
-```shell script
-php index.php generate test something
+class {{name}} extends Model
+{
+    protected $table = '';
+}
 ```
-
-### add custom command 
-
-```shell script
-php index.php test
+Then run:
+```shell
+php index.php generate model User
 ```
+This creates `Models/User.php`.
 
-To make this work, create a `TestCommand.php` class and it should look like following - 
+Shortcuts: `generate` = `g`, `controller` = `c`, `command` = `cmd`.
 
+### Add a custom command
+Run with `php index.php test`. Create `TestCommand.php`:
 ```php
 <?php
 use Roolith\Generator\Command;
@@ -78,11 +75,7 @@ class TestCommand implements CommandInterface
 {
     public function register()
     {
-        return [
-            'name' => 'test',
-            'alias' => [],
-            'typeAlias' => [],
-        ];
+        return ['name' => 'test', 'alias' => [], 'typeAlias' => []];
     }
 
     public function handle(Command $command, Console $console, FileParser $fileParser, FileGenerator $fileGenerator)
@@ -92,69 +85,18 @@ class TestCommand implements CommandInterface
 }
 ```
 
-Then register your command with generator class - 
-
+Register it:
 ```php
 $generator
     ->setTemplateDirectory(__DIR__.'/template')
     ->setProjectBaseDirectory(__DIR__)
-    ->registerCommandClass([
-        TestCommand::class
-    ])
+    ->registerCommandClass([TestCommand::class])
     ->watch($argv);
 ```
 
-There is a `demo` folder added for more details. 
+See `demo` folder for full example.
 
-### test cases
-
-```shell script
-$ ./vendor/bin/phpunit --testdox tests
-PHPUnit 9.2.6 by Sebastian Bergmann and contributors.
-
-Command
- ✔ Should get argument name
- ✔ Should get argument type
- ✔ Should get argument value
- ✔ Should get argument type with alias
- ✔ Should get registered command by name
- ✔ Should return raw type when command has no type alias
- ✔ Should resolve type via command alias
- ✔ Should return null when registry entry misses name and alias
- ✔ Should ignore registry entry without alias key
- ✔ Should return raw type when type alias is scalar
- ✔ Should return raw type when type alias value is scalar
- ✔ Should find command by string alias
- ✔ Should return raw type when no type alias matches
-
-Console
- ✔ Should set arguments
- ✔ Should remove first item from argument
- ✔ Should return bool for has arguments
-
-File Generator
- ✔ Should set file extension
- ✔ Should set project directory
- ✔ Should save file
-
-File Parser
- ✔ Should add default instructions
- ✔ Should set file extension
- ✔ Should set directory
- ✔ Should check whether template exists or not
- ✔ Should parse template
-
-Generate Factory
- ✔ Should have get instance method
-
-Generator
- ✔ Should create instance
- ✔ Should set template directory
- ✔ Should set project base directory
- ✔ Should have watch method
- ✔ Should register custom command
-
-Time: 00:00.012, Memory: 6.00 MB
-
-OK (30 tests, 37 assertions)
+### Tests
+```shell
+./vendor/bin/phpunit --testdox tests
 ```

@@ -405,6 +405,69 @@ class FileGeneratorTest extends TestCase
         rmdir($baseDir);
     }
 
+    public function testShouldRefuseOverwriteWhenFileExists()
+    {
+        $baseDir = sys_get_temp_dir().'/filegen-'.uniqid();
+        mkdir($baseDir, 0755, true);
+        $this->instance->setProjectBaseDir($baseDir);
+
+        $first = $this->instance->save(['first'], ['fileName' => 'Locked'], $this->console);
+        $this->assertTrue($first['created']);
+
+        $second = $this->instance->save(['second'], ['fileName' => 'Locked'], $this->console);
+        $this->assertFalse($second['created']);
+        $this->assertSame('first', file_get_contents($first['completeFilePath']));
+
+        unlink($first['completeFilePath']);
+        rmdir($baseDir);
+    }
+
+    public function testShouldUseCustomExtensionOnSave()
+    {
+        $baseDir = sys_get_temp_dir().'/filegen-'.uniqid();
+        mkdir($baseDir, 0755, true);
+        $this->instance->setProjectBaseDir($baseDir);
+        $this->instance->setFileExtension('module');
+
+        $saved = $this->instance->save(['hello'], ['fileName' => 'CustomExt'], $this->console);
+
+        $this->assertTrue($saved['created']);
+        $this->assertSame('CustomExt.module', $saved['filename']);
+        $this->assertTrue(is_file($saved['completeFilePath']));
+
+        unlink($saved['completeFilePath']);
+        rmdir($baseDir);
+    }
+
+    public function testShouldSaveWithNullInstructions()
+    {
+        $baseDir = sys_get_temp_dir().'/filegen-'.uniqid();
+        mkdir($baseDir, 0755, true);
+        $this->instance->setProjectBaseDir($baseDir);
+
+        $saved = $this->instance->save(['hello'], null, $this->console);
+
+        $this->assertTrue($saved['created']);
+        $this->assertSame('.php', $saved['filename']);
+        $this->assertTrue(is_file($saved['completeFilePath']));
+
+        unlink($saved['completeFilePath']);
+        rmdir($baseDir);
+    }
+
+    public function testDeleteDirReturnsFalseOnNonString()
+    {
+        $this->assertFalse($this->instance->deleteDir(null));
+        $this->assertFalse($this->instance->deleteDir(123));
+    }
+
+    public function testGetConfigReturnsDefaultExtension()
+    {
+        $fresh = new FileGenerator();
+
+        $this->assertSame('php', $fresh->getConfig()['extension']);
+    }
+
     private function givenInputStream($content)
     {
         $handle = fopen('php://memory', 'r+');

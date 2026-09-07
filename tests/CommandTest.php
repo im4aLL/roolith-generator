@@ -118,4 +118,37 @@ class CommandTest extends TestCase
         $this->command->register($registrationArray);
         $this->assertEquals('service', $this->command->type());
     }
+
+    public function testShouldReturnNullWhenNoArgumentsBootstrapped()
+    {
+        $this->command->bootstrap([]);
+
+        $this->assertNull($this->command->name());
+        $this->assertNull($this->command->type());
+        $this->assertNull($this->command->value());
+    }
+
+    public function testShouldReturnSelfOnBootstrapAndTrackRegistry()
+    {
+        $this->assertSame([], $this->command->getRegistry());
+
+        $result = $this->command->bootstrap(['generate']);
+
+        $this->assertSame($this->command, $result);
+        $this->assertNull($this->command->type());
+        $this->assertNull($this->command->value());
+
+        $this->command->register(['name' => 'generate']);
+
+        $this->assertCount(1, $this->command->getRegistry());
+    }
+
+    public function testShouldReturnNullForNullAndEmptyLookup()
+    {
+        $this->command->register(['name' => 'generate']);
+
+        $this->assertNull($this->command->getRegisteredCommandByName(null));
+        $this->assertNull($this->command->getRegisteredCommandByName(''));
+        $this->assertNull($this->command->getRegisteredCommandByName('unknown'));
+    }
 }

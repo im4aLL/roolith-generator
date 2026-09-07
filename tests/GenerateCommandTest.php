@@ -138,4 +138,98 @@ class GenerateCommandTest extends TestCase
             $fileGenerator->deleteDir($baseDir);
         }
     }
+
+    public function testShouldDescribeCommandViaRegister()
+    {
+        $registered = (new GenerateCommand())->register();
+
+        $this->assertSame('generate', $registered['name']);
+        $this->assertContains('g', $registered['alias']);
+        $this->assertSame(['c'], $registered['typeAlias']['controller']);
+        $this->assertSame(['cmd'], $registered['typeAlias']['command']);
+    }
+
+    public function testShouldOutputUnableToCreateFileWhenSaveFails()
+    {
+        $command = $this->makeCommand('controller', 'Demo');
+        $console = new Console();
+
+        $fileParser = $this->createMock(FileParser::class);
+        $fileParser->method('templateExists')->willReturn(true);
+        $fileParser->method('parseTemplate')->willReturn([
+            'lines' => ['hello'],
+            'instructions' => ['outputBaseDir' => '../escape', 'fileName' => 'Nope'],
+        ]);
+
+        $fileGenerator = new FileGenerator();
+        $baseDir = sys_get_temp_dir().'/gen-cmd-'.uniqid();
+        mkdir($baseDir, 0755, true);
+        $fileGenerator->setProjectBaseDir($baseDir);
+
+        $this->expectOutputRegex('/Unable to create file!/');
+
+        try {
+            (new GenerateCommand())->handle($command, $console, $fileParser, $fileGenerator);
+
+            $this->assertEquals(['.', '..'], scandir($baseDir));
+        } finally {
+            $fileGenerator->deleteDir($baseDir);
+        }
+    }
+
+    public function testShouldCreateFileWithNullValue()
+    {
+        $baseDir = sys_get_temp_dir().'/gen-cmd-'.uniqid();
+        mkdir($baseDir, 0755, true);
+
+        $command = new Command();
+        $command->bootstrap(['generate', 'controller']);
+        $console = new Console();
+        $fileParser = new FileParser();
+        $fileParser->setDirectory(__DIR__.'/test-template');
+        $fileGenerator = new FileGenerator();
+        $fileGenerator->setProjectBaseDir($baseDir);
+
+        $this->expectOutputRegex('/\.php has been created!/');
+
+        try {
+            (new GenerateCommand())->handle($command, $console, $fileParser, $fileGenerator);
+
+            $this->assertTrue(is_file($baseDir.'/Controllers/.php'));
+        } finally {
+            $fileGenerator->deleteDir($baseDir);
+        }
+    }
+
+    public function testShouldResolveTypeAliasEndToEnd()
+    {
+        $baseDir = sys_get_temp_dir().'/gen-cmd-'.uniqid();
+        mkdir($baseDir, 0755, true);
+
+        $command = new Command();
+        $command->bootstrap(['generate', 'c', 'AliasDemo']);
+
+        $handler = new GenerateCommand();
+        $registration = $handler->register();
+        $registration['instance'] = $handler;
+        $command->register($registration);
+
+        $this->assertSame('controller', $command->type());
+
+        $console = new Console();
+        $fileParser = new FileParser();
+        $fileParser->setDirectory(__DIR__.'/test-template');
+        $fileGenerator = new FileGenerator();
+        $fileGenerator->setProjectBaseDir($baseDir);
+
+        $this->expectOutputRegex('/AliasDemo\.php has been created!/');
+
+        try {
+            $handler->handle($command, $console, $fileParser, $fileGenerator);
+
+            $this->assertTrue(is_file($baseDir.'/Controllers/AliasDemo.php'));
+        } finally {
+            $fileGenerator->deleteDir($baseDir);
+        }
+    }
 }

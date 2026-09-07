@@ -1,0 +1,8 @@
+# outputBaseDir: Models
+<?php
+namespace Something;
+
+class {{name}} extends Model
+{
+    protected $table = '';
+}

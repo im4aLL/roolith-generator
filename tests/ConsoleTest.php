@@ -54,4 +54,28 @@ class ConsoleTest extends TestCase
 
         $this->console->outputLine('Location: /tmp/file.php');
     }
+
+    public function testShouldUseConstructorArguments()
+    {
+        $console = new Console(['index.php', 'generate', 'controller', 'Demo']);
+
+        $this->assertSame(['generate', 'controller', 'Demo'], $console->getArguments());
+        $this->assertTrue($console->hasArgument());
+    }
+
+    public function testShouldHaveNoArgumentWhenOnlyScriptName()
+    {
+        $console = new Console(['index.php']);
+
+        $this->assertSame([], $console->getArguments());
+        $this->assertFalse($console->hasArgument());
+    }
+
+    public function testShouldReturnEmptyArgumentsWhenNeverSet()
+    {
+        $console = new Console(null);
+
+        $this->assertSame([], $console->getArguments());
+        $this->assertFalse($console->hasArgument());
+    }
 }

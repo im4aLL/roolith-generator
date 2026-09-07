@@ -56,4 +56,21 @@ class GenerateFactoryTest extends TestCase
 
         unserialize($serialized);
     }
+
+    public function testShouldReturnGeneratorInstance()
+    {
+        $instance = \Roolith\Generator\GeneratorFactory::getInstance();
+
+        $this->assertInstanceOf(\Roolith\Generator\Generator::class, $instance);
+    }
+
+    public function testShouldPreventUnserializeCallbackDirectly()
+    {
+        $reflectionClass = new ReflectionClass(\Roolith\Generator\GeneratorFactory::class);
+        $instance = $reflectionClass->newInstanceWithoutConstructor();
+
+        $this->expectException(LogicException::class);
+
+        $instance->__unserialize([]);
+    }
 }

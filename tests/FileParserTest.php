@@ -121,4 +121,83 @@ class FileParserTest extends TestCase
             }
         }
     }
+
+    public function testShouldParseWithNullValue()
+    {
+        $this->instance->setDirectory(__DIR__.'/test-template');
+
+        $parsedTemplate = $this->instance->parseTemplate('controller', null);
+
+        $this->assertIsArray($parsedTemplate);
+        $this->assertSame('', $parsedTemplate['instructions']['fileName']);
+    }
+
+    public function testShouldSupportCustomInstruction()
+    {
+        $templateDir = sys_get_temp_dir().'/fileparser-'.uniqid();
+        $this->assertTrue(mkdir($templateDir, 0755, true));
+        file_put_contents($templateDir.'/custom.txt', "# outputBaseDir: Controllers\n# author: Hadi\nclass {{name}} {}");
+
+        $this->instance->setDirectory($templateDir);
+        $result = $this->instance->addInstruction(['name' => 'author', 'match' => '# author:']);
+
+        try {
+            $this->assertSame($this->instance, $result);
+            $parsedTemplate = $this->instance->parseTemplate('custom', 'demo');
+
+            $this->assertSame('Controllers', $parsedTemplate['instructions']['outputBaseDir']);
+            $this->assertSame('Hadi', $parsedTemplate['instructions']['author']);
+            $this->assertSame(['class Demo {}'], $parsedTemplate['lines']);
+        } finally {
+            unlink($templateDir.'/custom.txt');
+            rmdir($templateDir);
+        }
+    }
+
+    public function testShouldIgnoreUnknownHashLine()
+    {
+        $templateDir = sys_get_temp_dir().'/fileparser-'.uniqid();
+        $this->assertTrue(mkdir($templateDir, 0755, true));
+        file_put_contents($templateDir.'/unknown.txt', "# outputBaseDir: Controllers\n# unknown: foo\nclass {{name}} {}");
+
+        $this->instance->setDirectory($templateDir);
+
+        try {
+            $parsedTemplate = $this->instance->parseTemplate('unknown', 'demo');
+
+            $this->assertArrayNotHasKey('unknown', $parsedTemplate['instructions']);
+            $this->assertSame(['class Demo {}'], $parsedTemplate['lines']);
+        } finally {
+            unlink($templateDir.'/unknown.txt');
+            rmdir($templateDir);
+        }
+    }
+
+    public function testShouldTreatHashAsContentWhenPrefixIsEmpty()
+    {
+        $templateDir = sys_get_temp_dir().'/fileparser-'.uniqid();
+        $this->assertTrue(mkdir($templateDir, 0755, true));
+        file_put_contents($templateDir.'/raw.txt', "# outputBaseDir: Controllers\nclass {{name}} {}");
+
+        $parser = new FileParser(['extension' => 'txt', 'instructionPrefix' => '']);
+        $parser->setDirectory($templateDir);
+
+        try {
+            $parsedTemplate = $parser->parseTemplate('raw', 'demo');
+
+            $this->assertArrayNotHasKey('outputBaseDir', $parsedTemplate['instructions']);
+            $this->assertSame(['# outputBaseDir: Controllers', 'class Demo {}'], $parsedTemplate['lines']);
+        } finally {
+            unlink($templateDir.'/raw.txt');
+            rmdir($templateDir);
+        }
+    }
+
+    public function testShouldReturnDefaultsWhenFresh()
+    {
+        $parser = new FileParser();
+
+        $this->assertNull($parser->getDirectory());
+        $this->assertSame('txt', $parser->getExtension());
+    }
 }
